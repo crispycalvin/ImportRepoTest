@@ -1,29 +1,16 @@
-//Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent any
     stages {
-        stage('No-op') {
+        stage('Deploy') {
             steps {
-                sh 'ls'
+                retry(3) {
+                    sh './flakey-deploy.sh'
+                }
+
+                timeout(time: 3, unit: 'MINUTES') {
+                    sh './health-check.sh'
+                }
             }
-        }
-    }
-    post {
-        always {
-            echo 'One way or another, I have finished'
-            deleteDir() /* clean up our workspace */
-        }
-        success {
-            echo 'I succeeded!'
-        }
-        unstable {
-            echo 'I am unstable :/'
-        }
-        failure {
-            echo 'I failed :('
-        }
-        changed {
-            echo 'Things were different before...'
         }
     }
 }
