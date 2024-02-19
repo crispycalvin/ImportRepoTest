@@ -1,40 +1,29 @@
-/* Requires the Docker Pipeline plugin */
-pipeline {
-    agent { docker { image 'python:3.12.1-alpine3.19' } }
-    stages {
-        stage('build') {
-            steps {
-                sh 'python --version'
-            }
-        }
-    }
-}
-
+Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent any
     stages {
-        stage('Test') {
+        stage('No-op') {
             steps {
-                sh 'echo "Fail!"; exit 1'
+                sh 'ls'
             }
         }
     }
     post {
         always {
-            echo 'This will always run'
+            echo 'One way or another, I have finished'
+            deleteDir() /* clean up our workspace */
         }
         success {
-            echo 'This will run only if successful'
-        }
-        failure {
-            echo 'This will run only if failed'
+            echo 'I succeeded!'
         }
         unstable {
-            echo 'This will run only if the run was marked as unstable'
+            echo 'I am unstable :/'
+        }
+        failure {
+            echo 'I failed :('
         }
         changed {
-            echo 'This will run only if the state of the Pipeline has changed'
-            echo 'For example, if the Pipeline was previously failing but is now successful'
+            echo 'Things were different before...'
         }
     }
 }
